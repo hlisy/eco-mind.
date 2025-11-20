@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Eco Psychology Action Page</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    background: linear-gradient(120deg, #f4f9f4, #f3f7ff, #fff9f4);
+  }
+
+  section {
+    padding: 80px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1, h2 {
+    color: #2d4235;
+  }
+
+  /* 입력 & 버튼 */
+  #practiceInput {
+    width: 80%;
+    max-width: 400px;
+    padding: 15px;
+    border-radius: 14px;
+    border: 1px solid #9fc7a1;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+
+  #addBtn {
+    margin-top: 10px;
+    padding: 13px 25px;
+    background: #9bd48a;
+    border: none;
+    border-radius: 12px;
+    color: #193421;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+  }
+  #addBtn:hover {
+    background: #8acb78;
+  }
+
+  /* 뱃지 영역 */
+  #badgeDisplay {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .badge {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #c8f3c3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+  .badge:hover {
+    transform: scale(1.07);
+  }
+  .badge-icon {
+    font-size: 40px;
+    margin-bottom: 5px;
+  }
+
+  /* 탄소량 계산 박스 */
+  .calculator-box {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 500px;
+  }
+
+  #carbonResult {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #2e4a35;
+    font-weight: bold;
+  }
+
+  /* 그래프 영역 */
+  #ecoChart {
+    margin-top: 30px;
+    width: 90%;
+    max-width: 600px;
+  }
+
+  /* 스토리 박스 */
+  .story-box {
+    background: white;
+    padding: 40px;
+    border-radius: 18px;
+    max-width: 800px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    line-height: 1.7;
+    font-size: 18px;
+    color: #38493a;
+  }
+</style>
+</head>
+<body>
+
+<!-- SECTION 1: Intro -->
+<section>
+  <h1>🌿 심리학 기반 Eco 실천 플랫폼</h1>
+  <p>당신의 작은 변화가 기후·환경에 미치는 심리적·생태적 효과를 시각적으로 확인하세요.</p>
+</section>
+
+<!-- SECTION 2: 실천 기록 + 뱃지 -->
+<section>
+  <h2>✨ 오늘의 실천을 기록하세요</h2>
+  <input id="practiceInput" type="text" placeholder="예: 텀블러 사용 / 플라스틱 줄이기 / 전기 절약 등">
+  <button id="addBtn" onclick="createBadge()">뱃지 생성하기</button>
+
+  <div id="badgeDisplay"></div>
+</section>
+
+<!-- SECTION 3: 탄소량 계산기 -->
+<section>
+  <h2>🌎 절약한 탄소량 계산하기</h2>
+  <div class="calculator-box">
+    <p>오늘 실천으로 절약한 CO₂ 양을 계산해보세요. (예: 0.2kg)</p>
+    <input type="number" id="carbonInput" placeholder="절약한 탄소량(kg)">
+    <button id="addBtn" onclick="calcCarbon()">계산</button>
+    <div id="carbonResult"></div>
+  </div>
+</section>
+
+<!-- SECTION 4: 누적 기여도 그래프 -->
+<section>
+  <h2>📊 나의 누적 Eco 기여도</h2>
+  <canvas id="ecoChart"></canvas>
+</section>
+
+<!-- SECTION 5: 지역 환경 변화 스토리 -->
+<section>
+  <h2>📖 우리 지역의 환경 변화 스토리</h2>
+  <div class="story-box">
+    최근 우리 지역에서는 미세먼지 농도가 지난 5년 사이 17% 감소했습니다.  
+    이는 시민들의 생활 속 작은 실천이 모여 만들어낸 진짜 변화입니다.  
+    심리학 연구에서도 “작은 성공 경험의 반복”이 지속적 행동을 강화한다고 강조합니다.  
+    여러분의 실천이 지역 생태와 마음 건강을 함께 바꾸고 있습니다.
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* ---------------------- 1) 실천 뱃지 생성 ----------------------- */
+function createBadge() {
+  const text = document.getElementById("practiceInput").value.trim();
+  if (!text) return alert("실천 내용을 입력해주세요!");
+
+  let icon = "🌱";
+  if (text.includes("플라스틱")) icon = "🧴";
+  else if (text.includes("전기")) icon = "💡";
+  else if (text.includes("교통")) icon = "🚌";
+  else if (text.includes("물")) icon = "🚰";
+  else if (text.includes("텀블러")) icon = "☕";
+  else if (text.includes("재활용")) icon = "♻️";
+
+  const badge = document.createElement("div");
+  badge.className = "badge";
+  badge.innerHTML = `
+      <div class="badge-icon">${icon}</div>
+      <div>${text}</div>
+  `;
+
+  document.getElementById("badgeDisplay").appendChild(badge);
+  document.getElementById("practiceInput").value = "";
+
+  addGraphPoint();  // 그래프 수치 추가
+}
+
+/* ---------------------- 2) 탄소량 계산기 ----------------------- */
+function calcCarbon() {
+  const val = Number(document.getElementById("carbonInput").value);
+  if (!val) return alert("숫자를 입력해주세요!");
+  document.getElementById("carbonResult").innerText = `오늘 절약한 CO₂: ${val.toFixed(2)} kg`;
+
+  addGraphPoint(val);
+}
+
+/* ---------------------- 3) 그래프 ----------------------- */
+let dataPoints = [];
+const ctx = document.getElementById("ecoChart");
+
+const chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [{
+      label: "누적 기여도(kg CO₂)",
+      data: dataPoints,
+      borderWidth: 3
+    }]
+  },
+  options: {
+    responsive: true
+  }
+});
+
+function addGraphPoint(value = 0.1) {
+  chart.data.labels.push(`${chart.data.labels.length + 1}일`);
+  dataPoints.push((dataPoints.at(-1) || 0) + value);
+  chart.update();
+}
+</script>
+
+</body>
+</html>
